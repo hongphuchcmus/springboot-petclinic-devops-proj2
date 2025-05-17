@@ -43,8 +43,6 @@ pipeline {
             }
             steps {
                 script {
-                    sh 'echo "Running Docker Build & Push"'
-                    
                     def commitId = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
                     env.COMMIT_ID = commitId
 
