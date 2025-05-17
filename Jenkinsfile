@@ -38,12 +38,13 @@ pipeline {
         }
 
         stage('Docker Build & Push') {
-            sh 'echo "Running Docker Build & Push"'
             when {
                 expression { return env.BUILD_SERVICES }
             }
             steps {
                 script {
+                    sh 'echo "Running Docker Build & Push"'
+                    
                     def commitId = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
                     env.COMMIT_ID = commitId
 
