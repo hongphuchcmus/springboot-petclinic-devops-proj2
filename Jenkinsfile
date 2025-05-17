@@ -38,6 +38,7 @@ pipeline {
         }
 
         stage('Docker Build & Push') {
+            sh 'echo "Running Docker Build & Push"'
             when {
                 expression { return env.BUILD_SERVICES }
             }
@@ -54,11 +55,11 @@ pipeline {
                         """
 
                         sh """
-                            docker tag springcommunity/${service} phuong273/${serviceName}:${commitId} 
+                            docker tag springcommunity/${service} '$DOCKER_USER'/${serviceName}:${commitId} 
                         """
                         
                         sh """
-                            docker push phuong273/${serviceName}:${commitId}
+                            docker push '$DOCKER_USER'/${serviceName}:${commitId}
                         """
                     }
                 }
