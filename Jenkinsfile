@@ -9,7 +9,10 @@ pipeline {
         stage("Detect Changed Services") {
             steps {
                 script {
-                    def changedFiles = sh(script: "git diff --name-only origin/main...", returnStdout: true).trim().split("\n")
+                    // Fetch lastest main
+                    sh 'git fetch origin main'
+
+                    def changedFiles = sh(script: "git diff --name-only origin/main HEAD", returnStdout: true).trim().split("\n")
                     def affectedServices = []
 
                     SERVICES.split(',').each { service ->
