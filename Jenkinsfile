@@ -10,9 +10,9 @@ pipeline {
             steps {
                 script {
                     // Fetch lastest main
-                    sh 'git fetch origin main'
+                    sh 'git fetch origin main:refs/remotes/origin/main'
                     sh 'git branch -a'
-                    def changedFiles = sh(script: "git diff --name-only HEAD main", returnStdout: true).trim().split("\n")
+                    def changedFiles = sh(script: "git diff --name-only origin/main...", returnStdout: true).trim().split("\n")
                     def affectedServices = []
 
                     SERVICES.split(',').each { service ->
