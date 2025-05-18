@@ -54,9 +54,7 @@ pipeline {
                     
                     env.BUILD_SERVICES.split(',').each { service ->
                         dir(service) {
-                            // As PREPOSITORY_PREFIX is set to this docker user,
-                            // the images prefixes would all be "$DOCKER_USER" instead
-                            // of "springcommunity" as default
+                            // Prefix is "springcommunity" by default
                             sh "../mvnw clean install -P buildDocker"
                         }
                     }
@@ -68,8 +66,8 @@ pipeline {
             steps {
                 script {
                     env.BUILD_SERVICES.split(',').each { service ->
-                        sh "docker tag $REPOSITORY_PREFIX/${service} $REPOSITORY_PREFIX/${service}:${VERSION}"
-                        sh "docker push $REPOSITORY_PREFIX/${service}:${VERSION}"
+                        sh "docker tag springcommunity/${service} $REPOSITORY_PREFIX/${service}:${VERSION}"
+                        sh "docker push springcommunity/${service}:${VERSION}"
                     }
                 }
             }
