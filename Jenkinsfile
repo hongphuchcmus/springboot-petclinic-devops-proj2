@@ -67,7 +67,7 @@ pipeline {
                 script {
                     env.BUILD_SERVICES.split(',').each { service ->
                         sh "docker tag springcommunity/${service} $REPOSITORY_PREFIX/${service}:${VERSION}"
-                        sh "docker push springcommunity/${service}:${VERSION}"
+                        sh "docker push $REPOSITORY_PREFIX/${service}:${VERSION}"
                     }
                 }
             }
