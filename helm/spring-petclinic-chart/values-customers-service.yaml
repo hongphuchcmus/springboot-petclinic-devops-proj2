@@ -1,0 +1,18 @@
+nameOverride: customers-service
+serviceName: customers-service
+
+replicaCount: 1
+
+image:
+  repository: hongphuchcmus/spring-petclinic-customers-service
+  tag: latest
+  pullPolicy: IfNotPresent
+
+containerPort: 8081
+springProfile: docker
+
+service:
+  type: ClusterIP
+  port: 8081
+
+resources: {}

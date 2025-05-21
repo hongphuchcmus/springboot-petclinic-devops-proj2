@@ -1,0 +1,18 @@
+nameOverride: vets-service
+serviceName: vets-service
+
+replicaCount: 1
+
+image:
+  repository: hongphuchcmus/spring-petclinic-vets-service
+  tag: latest
+  pullPolicy: IfNotPresent
+
+containerPort: 8083
+springProfile: docker
+
+service:
+  type: ClusterIP
+  port: 8083
+
+resources: {}

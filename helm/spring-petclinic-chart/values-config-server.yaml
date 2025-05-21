@@ -1,0 +1,18 @@
+nameOverride: config-server
+serviceName: config-server
+
+replicaCount: 1
+
+image:
+  repository: hongphuchcmus/spring-petclinic-config-server
+  tag: latest
+  pullPolicy: IfNotPresent
+
+containerPort: 8888
+springProfile: docker
+
+service:
+  type: ClusterIP
+  port: 8888
+
+resources: {}

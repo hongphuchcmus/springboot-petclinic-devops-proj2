@@ -1,0 +1,18 @@
+nameOverride: discovery-server
+serviceName: discovery-server
+
+replicaCount: 1
+
+image:
+  repository: hongphuchcmus/spring-petclinic-discovery-server
+  tag: latest
+  pullPolicy: IfNotPresent
+
+containerPort: 8761
+springProfile: docker
+
+service:
+  type: ClusterIP
+  port: 8761
+
+resources: {}

@@ -1,0 +1,18 @@
+nameOverride: visits-service
+serviceName: visits-service
+
+replicaCount: 1
+
+image:
+  repository: hongphuchcmus/spring-petclinic-visits-service
+  tag: latest
+  pullPolicy: IfNotPresent
+
+containerPort: 8082
+springProfile: docker
+
+service:
+  type: ClusterIP
+  port: 8082
+
+resources: {}

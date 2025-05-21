@@ -1,0 +1,19 @@
+nameOverride: api-gateway
+serviceName: api-gateway
+
+replicaCount: 1
+
+image:
+  repository: hongphuchcmus/spring-petclinic-api-gateway
+  tag: latest
+  pullPolicy: IfNotPresent
+
+containerPort: 8080
+springProfile: docker
+
+service:
+  type: NodePort
+  port: 8080
+  nodePort: 30000
+
+resources: {}
