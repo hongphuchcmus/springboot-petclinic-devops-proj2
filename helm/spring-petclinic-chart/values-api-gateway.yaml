@@ -12,8 +12,15 @@ containerPort: 8080
 springProfile: docker
 
 service:
-  type: NodePort
+  type: ClusterIP
   port: 8080
-  nodePort: 30000
 
 resources: {}
+
+ingress:
+  enabled: true
+  name: "api-gateway-ingress"
+  className: "nginx"
+  host: "spring-petclinic.com"
+  tls: false
+  tlsSecret: ""
