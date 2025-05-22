@@ -123,10 +123,9 @@ pipeline {
                             """
                         }
 
-                        // Wait until pod is running
                         sh """
                             echo "Waiting for pod of service ${serviceName} to be running..."
-                            kubectl wait --for=condition=ready pod -l app=${serviceName} --timeout=120s
+                            kubectl get pod -w
                         """
                     }
                 }
