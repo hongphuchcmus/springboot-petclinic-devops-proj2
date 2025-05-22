@@ -90,8 +90,8 @@ pipeline {
 
                     if (minikubeStatusCode != "0") {
                         echo "Minikube not running or profile missing. Starting..."
-                        sh "minikube -p minikube start"
-                        sh "minikube -p minikube addons enable ingress"
+                        sh "minikube start -v=7 --alsologtostderr"
+                        sh "minikube addons enable ingress"
                     } else {
                         echo "Minikube is already running."
                     }
