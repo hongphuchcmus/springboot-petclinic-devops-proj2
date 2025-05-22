@@ -81,7 +81,7 @@ pipeline {
                     sh "eval \$(minikube -p minikube docker-env)"
                     
                     env.BUILD_SERVICES.split(',').each { service ->
-                        def serviceName = service.replaceFirst("spring-petclinic-chart-", "")
+                        def serviceName = service.replaceFirst("spring-petclinic-", "")
                         echo "Pulling ${env.REPOSITORY_PREFIX}/${service}:${env.VERSION}"
                         sh """
                             docker pull ${env.REPOSITORY_PREFIX}/${service}:${env.VERSION}
