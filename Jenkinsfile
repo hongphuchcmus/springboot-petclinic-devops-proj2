@@ -86,8 +86,8 @@ pipeline {
                             docker pull ${env.REPOSITORY_PREFIX}/${service}:${env.VERSION}
                         """
                         sh """
-                            helm upgrade "${service}" helm/spring-petclinic-chart \
-                            -f "helm/spring-petclinic-chart/values-${service}.yaml" \
+                            helm upgrade "${service}" ./helm/spring-petclinic-chart \
+                            -f "./helm/spring-petclinic-chart/values-${service}.yaml" \
                             --set image.tag=${env.VERSION}
                         """
                     }
