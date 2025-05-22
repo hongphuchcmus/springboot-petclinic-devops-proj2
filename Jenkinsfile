@@ -81,13 +81,14 @@ pipeline {
                     sh "eval \$(minikube -p minikube docker-env)"
                     
                     env.BUILD_SERVICES.split(',').each { service ->
+                        def serviceName = server.removeFirst("spring-petclinic-chart-", "")
                         echo "Pulling ${env.REPOSITORY_PREFIX}/${service}:${env.VERSION}"
                         sh """
                             docker pull ${env.REPOSITORY_PREFIX}/${service}:${env.VERSION}
                         """
                         sh """
-                            helm upgrade "${service}" ./helm/spring-petclinic-chart \
-                            -f "./helm/spring-petclinic-chart/values-${service}.yaml" \
+                            helm upgrade "${serviceName}" helm/spring-petclinic-chart \
+                            -f "helm/spring-petclinic-chart/values-${serviceName}.yaml" \
                             --set image.tag=${env.VERSION}
                         """
                     }
