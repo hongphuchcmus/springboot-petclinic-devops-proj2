@@ -84,8 +84,6 @@ pipeline {
                         fi
                     """
 
-                    // Connect to Minikube Docker daemon
-                    sh "eval \$(minikube -p minikube docker-env)"
 
                     // Ensure Minikube is running
                     def minikubeStatus = sh(script: "minikube -p minikube status --format '{{.Host}}'", returnStdout: true).trim()
@@ -95,6 +93,9 @@ pipeline {
                     } else {
                         echo "Minikube is already running."
                     }
+                    
+                    // Connect to Minikube Docker daemon
+                    sh "eval \$(minikube -p minikube docker-env)"
 
                     env.BUILD_SERVICES.split(',').each { service ->
                         def serviceName = service.replaceFirst("spring-petclinic-", "")
