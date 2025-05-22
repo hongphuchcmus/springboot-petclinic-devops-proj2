@@ -92,6 +92,7 @@ pipeline {
                         echo "Minikube not running or profile missing. Starting..."
                         sh "minikube start -v=7 --alsologtostderr"
                         sh "minikube addons enable ingress"
+                        sh "./helm/scripts/deploy_all.sh"
                     } else {
                         echo "Minikube is already running."
                     }
