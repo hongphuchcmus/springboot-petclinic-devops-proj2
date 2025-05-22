@@ -76,9 +76,38 @@ pipeline {
         stage("Pulling New Images") {
             steps {
                 script {
-                    echo "Access minikube's Docker"
-                    sh 'eval $(minikube -p minikube docker-env)'
+                    echo "Check if Minikube is running"
+                    def minikubeStatus = sh(script: "minikube status --format '{{.Host}}'", returnStdout: true).trim()
+                    if (minikubeStatus != "Running") {
+                        error("Minikube is not running. Please start it before proceeding.")
+                    }
+                    
+                    echo "Connect to Minikube's Docker daemon"
+                    sh "eval \$(minikube -p minikube docker-env)"
+                    
                     env.BUILD_SERVICES.split(',').each { service ->
+                        echo "Check if helm release is installed"
+                        def serviceName = service.removeFirst("spring-petclinic-", "")
+                        def releaseCheck = sh(script: "helm list -q | grep -w ${serviceName}", returnStatus: true)
+                        if (releaseCheck != 0) {
+                            error("Helm release '${service}' is not installed.")
+                        }
+
+                        echo "Check if service pod is running"
+                        def podsReady = sh(
+                            script: """
+                                kubectl get pods -l app.kubernetes.io/name=${serviceName} \\
+                                    --field-selector=status.phase=Running \\
+                                    --no-headers | wc -l
+                            """,
+                            returnStdout: true
+                        ).trim()
+
+                        if (podsReady == "0") {
+                            error("Pods for '${service}' are not running. Please check the deployment.")
+                        }
+                        
+                        
                         echo "Pulling ${env.REPOSITORY_PREFIX}/${service}:${env.VERSION}"
                         sh """
                             docker pull ${env.REPOSITORY_PREFIX}/${service}:${env.VERSION}
