@@ -84,16 +84,16 @@ pipeline {
                         fi
                     """
 
-
                     // Ensure Minikube is running
                     def minikubeStatus = sh(script: "minikube -p minikube status --format '{{.Host}}'", returnStdout: true).trim()
-                    if (minikubeStatus != "Running") {
-                        echo "Minikube not running. Starting..."
+                    
+                    if (minikubeStatusCode != "0") {
+                        echo "Minikube not running or profile missing. Starting..."
                         sh "minikube -p minikube start"
                     } else {
                         echo "Minikube is already running."
                     }
-                    
+
                     // Connect to Minikube Docker daemon
                     sh "eval \$(minikube -p minikube docker-env)"
 
