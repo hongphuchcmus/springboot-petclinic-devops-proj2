@@ -15,7 +15,7 @@ pipeline {
                     def changedFiles = sh(script: "git diff --name-only origin/main...", returnStdout: true).trim().split("\n")
                     def affectedServices = []
 
-                    SERVICES.split(',').each { service ->
+                    env.SERVICES.split(',').each { service ->
                         if (changedFiles.find { it.startsWith(service + "/") }) {
                             affectedServices.add(service)
                         }
