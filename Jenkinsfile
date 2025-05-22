@@ -76,9 +76,12 @@ pipeline {
             steps {
                 script {
                     // Ensure MINIKUBE_HOME exists and is accessible
+                    
                     sh """
-                        mkdir -p ${env.MINIKUBE_HOME}
-                        chmod -R u+wrx ${env.MINIKUBE_HOME}
+                        if [ ! -d "$MINIKUBE_HOME" ]; then
+                            mkdir -p "$MINIKUBE_HOME"
+                            chmod -R u+wrx "$MINIKUBE_HOME"
+                        fi
                     """
 
                     // Connect to Minikube Docker daemon
