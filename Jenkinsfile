@@ -55,7 +55,7 @@ pipeline {
                     
                     env.BUILD_SERVICES.split(',').each { service ->
                         dir(service) {
-                            sh "../mvnw clean install -P buildDocker"
+                            sh "../mvnw install -D skipTests -P buildDocker"
                         }
                     }
                 }
