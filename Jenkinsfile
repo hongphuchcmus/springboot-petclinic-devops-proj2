@@ -85,8 +85,8 @@ pipeline {
                     """
 
                     // Ensure Minikube is running
-                    def minikubeStatus = sh(script: "minikube -p minikube status --format '{{.Host}}'", returnStdout: true).trim()
-                    
+                    def minikubeStatusCode = sh(script: "minikube -p minikube status --format '{{.Host}}' > /dev/null 2>&1 || echo \$?", returnStdout: true).trim()
+
                     if (minikubeStatusCode != "0") {
                         echo "Minikube not running or profile missing. Starting..."
                         sh "minikube -p minikube start"
