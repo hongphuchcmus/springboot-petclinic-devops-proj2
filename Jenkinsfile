@@ -74,17 +74,8 @@ pipeline {
         stage("Deploy to Minikube") {
             steps {
                 script {
-                    // Ensure MINIKUBE_HOME exists and is accessible
-                    
-                    sh """
-                        if [ ! -d "$MINIKUBE_HOME" ]; then
-                            mkdir -p "$MINIKUBE_HOME"
-                            chmod -R u+wrx "$MINIKUBE_HOME"
-                        fi
-                    """
-
                     // Ensure Minikube is running
-                    def minikubeStatusCode = sh(script: "minikube -p minikube status --format '{{.Host}}' > /dev/null 2>&1 || echo \$?", returnStdout: true).trim()
+                    def minikubeStatusCode = sh(script: "minikube status --format '{{.Host}}' > /dev/null 2>&1 || echo \$?", returnStdout: true).trim()
 
                     if (minikubeStatusCode != "0") {
                         echo "Minikube not running or profile missing. Starting..."
