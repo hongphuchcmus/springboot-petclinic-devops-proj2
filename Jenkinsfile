@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        KUBECONFIG = "/home/hongphuc/.kube/config" 
+        //KUBECONFIG = "/home/hongphuc/.kube/config" 
         SERVICES = "spring-petclinic-vets-service,spring-petclinic-customers-service,spring-petclinic-visits-service,spring-petclinic-admin-server,spring-petclinic-api-gateway,spring-petclinic-config-server,spring-petclinic-genai-service,spring-petclinic-discovery-server"
     }
 
@@ -37,7 +37,9 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     script {
                         env.REPOSITORY_PREFIX = DOCKER_USER
-                        sh "echo \"$DOCKER_PASS\" | docker login -u \"$DOCKER_USER\" --password-stdin"
+                        sh '''
+                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin"
+                        '''
                     }
                 }
             }
@@ -99,7 +101,7 @@ pipeline {
                         } else {
                             echo "Helm release '${serviceName}' not found. Installing..."
                             sh """
-                                helm install "${serviceName}" ${chartPath} \
+                                helm --kube-insecure-skip-tls-verify install "${serviceName}" ${chartPath} \
                                 -f "${valuesFile}" --set image.tag=${env.VERSION}
                             """
                         }
