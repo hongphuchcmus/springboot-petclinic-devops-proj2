@@ -77,17 +77,8 @@ pipeline {
                     // Ensure Minikube is running
                     def minikubeStatusCode = sh(script: "minikube status --format '{{.Host}}' > /dev/null 2>&1 || echo \$?", returnStdout: true).trim()
 
-                    if (minikubeStatusCode != "0") {
-                        echo "Minikube not running or profile missing. Starting..."
-                        sh "minikube start -v=7 --alsologtostderr"
-                        sh "minikube addons enable ingress"
-                        sh "./helm/scripts/deploy_all.sh"
-                    } else {
-                        echo "Minikube is already running."
-                    }
-
                     // Connect to Minikube Docker daemon
-                    sh "eval \$(minikube -p minikube docker-env)"
+                    sh "eval \$(minikube docker-env)"
 
                     env.BUILD_SERVICES.split(',').each { service ->
                         def serviceName = service.replaceFirst("spring-petclinic-", "")
