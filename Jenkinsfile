@@ -3,8 +3,6 @@ pipeline {
 
     environment {
         // Set to your main user here
-        KUBECONFIG = "/home/hongphuc/.kube/config"
-        MINIKUBE_HOME = "/home/hongphuc/.minikube"
         SERVICES = "spring-petclinic-vets-service,spring-petclinic-customers-service,spring-petclinic-visits-service,spring-petclinic-admin-server,spring-petclinic-api-gateway,spring-petclinic-config-server,spring-petclinic-genai-service,spring-petclinic-discovery-server"
     }
 
@@ -78,12 +76,7 @@ pipeline {
 
         stage("Deploy to Minikube") {
             steps {
-                script {
-                    // Ensure Minikube is running
-                    def minikubeStatusCode = sh(script: "minikube status --format '{{.Host}}' > /dev/null 2>&1 || echo \$?", returnStdout: true).trim()
-                        
-
-                    
+                script {                        
                     env.BUILD_SERVICES.split(',').each { service ->
                         def serviceName = service.replaceFirst("spring-petclinic-", "")
                         def chartPath = "helm/spring-petclinic-chart"
@@ -92,18 +85,6 @@ pipeline {
                         echo "Pulling image ${env.REPOSITORY_PREFIX}/${service}:${env.VERSION}"
                         sh "minikube image pull ${env.REPOSITORY_PREFIX}/${service}:${env.VERSION}"
 
-                        // Check if Minikube is running
-                        def minikubeStatusOutput = sh(script: "minikube status || true", returnStdout: true).trim()
-                        if (!minikubeStatusOutput.contains("Running")) {
-                            echo "Minikube is not running. Starting now..."
-                            // Optional: Delete minikube cluster and start a completely new one
-                            // sh "minikube delete || true"
-                            // Start Minikube with ingress
-                            sh "minikube start --addons=ingress"
-                            echo "Deploying all services..."
-                            sh "./helm/scripts/deploy_all.sh"
-                        }
-    
                         // Check if Helm release exists
                         def releaseExists = sh(script: "helm list | grep -w ${serviceName} || true", returnStdout: true).trim()
                         echo "Release: ${releaseExists}"
