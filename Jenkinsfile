@@ -90,6 +90,7 @@ pipeline {
 
                         // Check if Helm release exists
                         def releaseExists = sh(script: "helm list -q | grep -w ${serviceName} || true", returnStdout: true).trim()
+                        echo "Release: ${releaseExists}"
                         if (releaseExists) {
                             echo "Helm release '${serviceName}' found. Performing upgrade..."
                             sh """
