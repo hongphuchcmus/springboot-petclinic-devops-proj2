@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     environment {
+        KUBECONFIG = "home/hongphuc/.kube/config" 
         SERVICES = "spring-petclinic-vets-service,spring-petclinic-customers-service,spring-petclinic-visits-service,spring-petclinic-admin-server,spring-petclinic-api-gateway,spring-petclinic-config-server,spring-petclinic-genai-service,spring-petclinic-discovery-server"
     }
 
@@ -77,16 +78,14 @@ pipeline {
                     // Ensure Minikube is running
                     def minikubeStatusCode = sh(script: "minikube status --format '{{.Host}}' > /dev/null 2>&1 || echo \$?", returnStdout: true).trim()
 
-                    // Connect to Minikube Docker daemon
-                    sh "eval \$(minikube docker-env)"
-
+                    
                     env.BUILD_SERVICES.split(',').each { service ->
                         def serviceName = service.replaceFirst("spring-petclinic-", "")
                         def chartPath = "helm/spring-petclinic-chart"
                         def valuesFile = "${chartPath}/values-${serviceName}.yaml"
 
                         echo "Pulling image ${env.REPOSITORY_PREFIX}/${service}:${env.VERSION}"
-                        sh "docker pull ${env.REPOSITORY_PREFIX}/${service}:${env.VERSION}"
+                        sh "minikube image pull ${env.REPOSITORY_PREFIX}/${service}:${env.VERSION}"
 
                         // Check if Helm release exists
                         def releaseExists = sh(script: "helm list -q | grep -w ${serviceName} || true", returnStdout: true).trim()
@@ -100,7 +99,7 @@ pipeline {
                         } else {
                             echo "Helm release '${serviceName}' not found. Installing..."
                             sh """
-                                helm install "${serviceName}" ${chartPath} \
+                                helm --kube-insecure-skip-tls-verify install "${serviceName}" ${chartPath} \
                                 -f "${valuesFile}" --set image.tag=${env.VERSION}
                             """
                         }
