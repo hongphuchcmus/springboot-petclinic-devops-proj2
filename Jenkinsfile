@@ -78,6 +78,7 @@ pipeline {
                 script {
                     // Ensure Minikube is running
                     def minikubeStatusCode = sh(script: "minikube status --format '{{.Host}}' > /dev/null 2>&1 || echo \$?", returnStdout: true).trim()
+                        
 
                     
                     env.BUILD_SERVICES.split(',').each { service ->
@@ -88,8 +89,20 @@ pipeline {
                         echo "Pulling image ${env.REPOSITORY_PREFIX}/${service}:${env.VERSION}"
                         sh "minikube image pull ${env.REPOSITORY_PREFIX}/${service}:${env.VERSION}"
 
+                        // Check if Minikube is running
+                        def minikubeStatusOutput = sh(script: "minikube status || true", returnStdout: true).trim()
+                        if (!minikubeStatusOutput.contains("Running")) {
+                            echo "Minikube is not running. Starting now..."
+                            // Optional: Delete minikube cluster and start a completely new one
+                            // sh "minikube delete || true"
+                            // Start Minikube with ingress
+                            sh "minikube start --addons=ingress"
+                            echo "Deploying all services..."
+                            sh "./helm/scripts/deploy_all.sh"
+                        }
+    
                         // Check if Helm release exists
-                        def releaseExists = sh(script: "helm list -q | grep -w ${serviceName} || true", returnStdout: true).trim()
+                        def releaseExists = sh(script: "helm list | grep -w ${serviceName} || true", returnStdout: true).trim()
                         echo "Release: ${releaseExists}"
                         if (releaseExists) {
                             echo "Helm release '${serviceName}' found. Performing upgrade..."
