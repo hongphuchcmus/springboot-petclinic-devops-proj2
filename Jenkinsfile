@@ -92,13 +92,15 @@ pipeline {
                             echo "Helm release '${serviceName}' found. Performing upgrade..."
                             sh """
                                 helm upgrade "${serviceName}" ${chartPath} \
-                                -f "${valuesFile}" --set image.tag=${env.VERSION}
+                                -f "${valuesFile}" --set image.tag=${env.VERSION} \
+                                --kube-insecure-skip-tls-verify
                             """
                         } else {
                             echo "Helm release '${serviceName}' not found. Installing..."
                             sh """
                                 helm install "${serviceName}" ${chartPath} \
-                                -f "${valuesFile}" --set image.tag=${env.VERSION}
+                                -f "${valuesFile}" --set image.tag=${env.VERSION} \
+                                --kube-insecure-skip-tls-verify
                             """
                         }
 
