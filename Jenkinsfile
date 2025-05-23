@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        KUBECONFIG = "/home/hongphuc/.kube/config" 
         SERVICES = "spring-petclinic-vets-service,spring-petclinic-customers-service,spring-petclinic-visits-service,spring-petclinic-admin-server,spring-petclinic-api-gateway,spring-petclinic-config-server,spring-petclinic-genai-service,spring-petclinic-discovery-server"
     }
 
@@ -101,7 +100,7 @@ pipeline {
                         } else {
                             echo "Helm release '${serviceName}' not found. Installing..."
                             sh """
-                                helm --kube-insecure-skip-tls-verify install "${serviceName}" ${chartPath} \
+                                helm install "${serviceName}" ${chartPath} \
                                 -f "${valuesFile}" --set image.tag=${env.VERSION}
                             """
                         }
