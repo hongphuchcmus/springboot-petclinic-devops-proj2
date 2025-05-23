@@ -2,6 +2,9 @@ pipeline {
     agent any
 
     environment {
+        // Set to your main user here
+        KUBECONFIG = "/home/hongphuc/.kube/config"
+        MINIKUBE_HOME = "/home/hongphuc/.minikube"
         SERVICES = "spring-petclinic-vets-service,spring-petclinic-customers-service,spring-petclinic-visits-service,spring-petclinic-admin-server,spring-petclinic-api-gateway,spring-petclinic-config-server,spring-petclinic-genai-service,spring-petclinic-discovery-server"
     }
 
