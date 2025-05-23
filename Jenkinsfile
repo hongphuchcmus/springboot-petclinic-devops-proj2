@@ -99,7 +99,7 @@ pipeline {
                         } else {
                             echo "Helm release '${serviceName}' not found. Installing..."
                             sh """
-                                helm --kube-insecure-skip-tls-verify install "${serviceName}" ${chartPath} \
+                                helm install "${serviceName}" ${chartPath} \
                                 -f "${valuesFile}" --set image.tag=${env.VERSION}
                             """
                         }
