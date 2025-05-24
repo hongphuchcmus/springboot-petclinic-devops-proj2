@@ -33,11 +33,11 @@ pipeline {
         stage("Build & Push Images") {
             steps {
                 script {
-                    echo "Building all images with tag ${IMAGE_TAG}..."
+                    echo "Building all images with tag ${env.IMAGE_TAG}..."
                     sh "../mvnw install -DskipTests -P buildDocker"
                     env.SERVICES.split(',').each { service ->
-                        sh "docker tag springcommunity/${service} ${REPOSITORY_PREFIX}/${service}:${IMAGE_TAG}"
-                        sh "docker push ${REPOSITORY_PREFIX}/${service}:${IMAGE_TAG}"
+                        sh "docker tag springcommunity/${service} ${env.REPOSITORY_PREFIX}/${service}:${IMAGE_TAG}"
+                        sh "docker push ${env.REPOSITORY_PREFIX}/${service}:${env.IMAGE_TAG}"
                     }
                 }
             }
