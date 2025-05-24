@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Hi again main
-        IMAGE_TAG = "What"
+        IMAGE_TAG = "t"
     }
 
     stages {
