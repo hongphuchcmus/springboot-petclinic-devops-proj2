@@ -2,30 +2,35 @@ pipeline {
     agent any
 
     environment {
-        SERVICES = "spring-petclinic-vets-service,spring-petclinic-customers-service,spring-petclinic-visits-service,spring-petclinic-admin-server,spring-petclinic-api-gateway,spring-petclinic-config-server,spring-petclinic-genai-service,spring-petclinic-discovery-server"
         IMAGE_TAG = ""
     }
 
     stages {
-        stage("Prepare") {
+        stage("Checkout") {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage("Detect Tag") {
             steps {
                 script {
-                    // Lấy tag git làm IMAGE_TAG
-                    env.IMAGE_TAG = sh(script: "git describe --tags --exact-match || echo ''", returnStdout: true).trim()
-                    if (env.IMAGE_TAG == "") {
-                        error("No git tag found. ci-staging chỉ chạy khi có tag trên main branch.")
+                    def tag = sh(script: "git tag --points-at HEAD", returnStdout: true).trim()
+                    if (!tag) {
+                        echo "Not a tag-triggered build. Skipping..."
+                        currentBuild.result = "SUCCESS"
+                        return
                     }
+                    env.IMAGE_TAG = tag
                 }
             }
         }
 
-        stage("Docker Login") {
+        stage("Login Docker") {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    script {
-                        env.REPOSITORY_PREFIX = DOCKER_USER
-                        sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
-                    }
+                    sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
+                    script { env.REPOSITORY_PREFIX = DOCKER_USER }
                 }
             }
         }
@@ -33,11 +38,22 @@ pipeline {
         stage("Build & Push Images") {
             steps {
                 script {
-                    echo "Building all images with tag ${env.IMAGE_TAG}..."
-                    sh "./mvnw install -DskipTests -P buildDocker"
-                    env.SERVICES.split(',').each { service ->
-                        sh "docker tag springcommunity/${service} ${env.REPOSITORY_PREFIX}/${service}:${IMAGE_TAG}"
-                        sh "docker push ${env.REPOSITORY_PREFIX}/${service}:${env.IMAGE_TAG}"
+                    def services = [
+                        "spring-petclinic-vets-service",
+                        "spring-petclinic-customers-service",
+                        "spring-petclinic-visits-service",
+                        "spring-petclinic-admin-server",
+                        "spring-petclinic-api-gateway",
+                        "spring-petclinic-config-server",
+                        "spring-petclinic-genai-service",
+                        "spring-petclinic-discovery-server"
+                    ]
+                    sh './mvnw install -DskipTests -P buildDocker'
+                    for (s in services) {
+                        dir(s) {
+                            sh "docker tag springcommunity/${s} ${env.REPOSITORY_PREFIX}/${s}:${env.IMAGE_TAG}"
+                            sh "docker push ${env.REPOSITORY_PREFIX}/${s}:${env.IMAGE_TAG}"
+                        }
                     }
                 }
             }
