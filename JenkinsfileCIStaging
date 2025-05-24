@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        // Hi again
+        // Hi again main
         IMAGE_TAG = ""
     }
 
