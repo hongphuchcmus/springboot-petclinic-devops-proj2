@@ -18,12 +18,13 @@ pipeline {
                         def serviceName = service.replaceFirst("spring-petclinic", "")
                         def chartPath = "helm/spring-petclinic-chart"
                         def valuesFile = "${chartPath}/values-${serviceName}.yaml"
+                        def imageTag = params.get(serviceName)
 
-                        echo "Params: ${serviceName} - ${params[serviceName]}"
+                        echo "Params: ${serviceName} - ${imageTag}"
                         sh """            
                             helm upgrade --install ${serviceName} ${chartPath} \
                             --namespace ${env.NAMESPACE} \
-                            -f ${valuesFile} --set image.tag=${params[serviceName]}
+                            -f ${valuesFile} --set image.tag=${imageTag}
                         """
                     }
                 }
