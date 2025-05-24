@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Hi again main is htis at
-        IMAGE_TAG = "not new"
+        IMAGE_TAG = "not new agian"
     }
 
     stages {
