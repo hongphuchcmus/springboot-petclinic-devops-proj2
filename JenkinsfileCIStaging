@@ -2,8 +2,7 @@ pipeline {
     agent any
 
     environment {
-        // Hi again main is htis at
-        IMAGE_TAG = "not new agian agian"
+        IMAGE_TAG = ""
     }
 
     stages {
@@ -18,6 +17,7 @@ pipeline {
                         return
                     }
                     env.IMAGE_TAG = tag
+                    echo "Your lovely tag is '${tag}'"
                 }
             }
         }
