@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+
+    environment {
+        SERVICES = "spring-petclinic-vets-service,spring-petclinic-customers-service,spring-petclinic-visits-service,spring-petclinic-admin-server,spring-petclinic-api-gateway,spring-petclinic-config-server,spring-petclinic-genai-service,spring-petclinic-discovery-server"
+        IMAGE_TAG = ""
+    }
+
+    stages {
+        stage("Prepare") {
+            steps {
+                script {
+                    // Lấy tag git làm IMAGE_TAG
+                    env.IMAGE_TAG = sh(script: "git describe --tags --exact-match || echo ''", returnStdout: true).trim()
+                    if (env.IMAGE_TAG == "") {
+                        error("No git tag found. ci-staging chỉ chạy khi có tag trên main branch.")
+                    }
+                }
+            }
+        }
+
+        stage("Docker Login") {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    script {
+                        env.REPOSITORY_PREFIX = DOCKER_USER
+                        sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
+                    }
+                }
+            }
+        }
+
+        stage("Build & Push Images") {
+            steps {
+                script {
+                    echo "Building all images with tag ${IMAGE_TAG}..."
+                    sh "../mvnw install -DskipTests -P buildDocker"
+                    env.SERVICES.split(',').each { service ->
+                        sh "docker tag springcommunity/${service} ${REPOSITORY_PREFIX}/${service}:${IMAGE_TAG}"
+                        sh "docker push ${REPOSITORY_PREFIX}/${service}:${IMAGE_TAG}"
+                    }
+                }
+            }
+        }
+    }
+}
