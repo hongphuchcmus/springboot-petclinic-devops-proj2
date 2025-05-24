@@ -30,59 +30,5 @@ pipeline {
                 }
             }
         }
-        
-        
-        stage('Get Service Access Info') {
-            steps {
-                script {
-                    def namespace = env.K8S_NAMESPACE
-                    def serviceNames = [
-                        "api-gateway",
-                        "config-server",
-                        "discovery-server",
-                        "vets-service",
-                        "customers-service",
-                        "visits-service"
-                        ]
-
-                    def nodeIp
-                    try {
-                        nodeIp = sh(script: "minikube ip", returnStdout: true).trim()
-                        if (!nodeIp) {
-                            echo "Warning: Could not get a Node IP."
-                        }
-                    } catch (Exception e) {
-                        error("Failed to get Node IP")
-                    }
-
-                    echo "--- Service Access Information ---"
-                    echo "Node IP (for NodePort access): ${nodeIp ?: 'N/A'}" 
-                    echo "Namespace: ${namespace}"
-                    echo "---------------------------------"
-                    
-                    serviceNames.each { name ->
-                        def nodePort = "N/A"
-                        // def clusterIP = "N/A"
-                    
-                        try {
-                            // Get NodePort
-                            nodePort = sh(script: "kubectl get svc ${name} -n ${namespace} -o jsonpath='{.spec.ports[0].nodePort}'", returnStdout: true).trim()
-                        } catch (Exception e) {
-                            echo "Could not get NodePort for service ${name}: ${e.getMessage()}"
-                        }
-        
-                    
-                        echo "Service: ${name}"
-                        echo "  External NodePort: ${nodePort}"
-                        if (nodeIp && nodePort != "N/A") {
-                            echo "  Possible Access URL: http://${nodeIp}:${nodePort}"
-                        } else {
-                            echo "  (Access URL not available without Node IP or NodePort)"
-                        }
-                        echo "---------------------------------"
-                    }
-                }
-            }
-        }
     }
 }
