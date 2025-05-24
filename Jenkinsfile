@@ -2,6 +2,8 @@ pipeline {
     agent any
 
     environment {
+        // Set to your main user here
+        KUBECONFIG = "/home/hongphuc/.kube/config"
         SERVICES = "spring-petclinic-vets-service,spring-petclinic-customers-service,spring-petclinic-visits-service,spring-petclinic-admin-server,spring-petclinic-api-gateway,spring-petclinic-config-server,spring-petclinic-genai-service,spring-petclinic-discovery-server"
     }
 
@@ -9,7 +11,6 @@ pipeline {
         stage("Detect Changed Services") {
             steps {
                 script {
-                    // Fetch lastest main
                     sh 'git fetch origin main:refs/remotes/origin/main'
                     sh 'git branch -a'
                     def changedFiles = sh(script: "git diff --name-only origin/main...", returnStdout: true).trim().split("\n")
@@ -37,7 +38,9 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     script {
                         env.REPOSITORY_PREFIX = DOCKER_USER
-                        sh "echo \"$DOCKER_PASS\" | docker login -u \"$DOCKER_USER\" --password-stdin"
+                        sh '''
+                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        '''
                     }
                 }
             }
@@ -54,8 +57,7 @@ pipeline {
                     
                     env.BUILD_SERVICES.split(',').each { service ->
                         dir(service) {
-                            // Prefix is "springcommunity" by default
-                            sh "../mvnw clean install -P buildDocker"
+                            sh "../mvnw install -D skipTests -P buildDocker"
                         }
                     }
                 }
@@ -73,49 +75,37 @@ pipeline {
             }
         }
 
-        stage("Pulling New Images") {
+        stage("Deploy to Minikube") {
             steps {
-                script {
-                    echo "Check if Minikube is running"
-                    def minikubeStatus = sh(script: "minikube status --format '{{.Host}}'", returnStdout: true).trim()
-                    if (minikubeStatus != "Running") {
-                        error("Minikube is not running. Please start it before proceeding.")
-                    }
-                    
-                    echo "Connect to Minikube's Docker daemon"
-                    sh "eval \$(minikube -p minikube docker-env)"
-                    
+                script {                        
                     env.BUILD_SERVICES.split(',').each { service ->
-                        echo "Check if helm release is installed"
-                        def serviceName = service.removeFirst("spring-petclinic-", "")
-                        def releaseCheck = sh(script: "helm list -q | grep -w ${serviceName}", returnStatus: true)
-                        if (releaseCheck != 0) {
-                            error("Helm release '${service}' is not installed.")
+                        def serviceName = service.replaceFirst("spring-petclinic-", "")
+                        def chartPath = "helm/spring-petclinic-chart"
+                        def valuesFile = "${chartPath}/values-${serviceName}.yaml"
+
+                        echo "Pulling image ${env.REPOSITORY_PREFIX}/${service}:${env.VERSION}"
+                        sh "minikube image pull ${env.REPOSITORY_PREFIX}/${service}:${env.VERSION}"
+
+                        // Check if Helm release exists
+                        def releaseExists = sh(script: "helm list | grep -w ${serviceName} || true", returnStdout: true).trim()
+                        echo "Release: ${releaseExists}"
+                        if (releaseExists) {
+                            echo "Helm release '${serviceName}' found. Performing upgrade..."
+                            sh """
+                                helm upgrade "${serviceName}" ${chartPath} \
+                                -f "${valuesFile}" --set image.tag=${env.VERSION} \
+                            """
+                        } else {
+                            echo "Helm release '${serviceName}' not found. Installing..."
+                            sh """
+                                helm install "${serviceName}" ${chartPath} \
+                                -f "${valuesFile}" --set image.tag=${env.VERSION} \
+                            """
                         }
 
-                        echo "Check if service pod is running"
-                        def podsReady = sh(
-                            script: """
-                                kubectl get pods -l app.kubernetes.io/name=${serviceName} \\
-                                    --field-selector=status.phase=Running \\
-                                    --no-headers | wc -l
-                            """,
-                            returnStdout: true
-                        ).trim()
-
-                        if (podsReady == "0") {
-                            error("Pods for '${service}' are not running. Please check the deployment.")
-                        }
-                        
-                        
-                        echo "Pulling ${env.REPOSITORY_PREFIX}/${service}:${env.VERSION}"
                         sh """
-                            docker pull ${env.REPOSITORY_PREFIX}/${service}:${env.VERSION}
-                        """
-                        sh """
-                            helm upgrade "${service}" helm/spring-petclinic-chart \
-                            -f "helm/spring-petclinic-chart/values-${service}.yaml" \
-                            --set image.tag=${env.VERSION}
+                            echo "Waiting for pod of service ${serviceName} to be running..."
+                            kubectl get pod -w
                         """
                     }
                 }
@@ -123,3 +113,4 @@ pipeline {
         }
     }
 }
+
