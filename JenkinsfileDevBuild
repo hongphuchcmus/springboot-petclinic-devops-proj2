@@ -7,6 +7,12 @@ pipeline {
     }
 
     stages {
+        stage('Checkout Helm Repo') {
+            steps {
+                git url: 'https://github.com/hongphuchcmus/springboot-petclinic-gitops.git', branch: 'main'
+            }
+        }
+
         stage('Helm Deploy') {
             steps {
                 script {
@@ -15,7 +21,7 @@ pipeline {
                     """
 
                     env.SERVICES.split(',').each { service ->
-                        def serviceName = service.replaceFirst("spring-petclinic", "")
+                        def serviceName = service.replaceFirst("spring-petclinic-", "")
                         def chartPath = "helm/spring-petclinic-chart"
                         def valuesFile = "${chartPath}/values-${serviceName}.yaml"
                         def imageTag = params.get(serviceName)
