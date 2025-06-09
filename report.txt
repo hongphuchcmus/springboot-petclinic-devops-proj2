@@ -1,0 +1,79 @@
+Name:             api-gateway-7f9d74475f-z4wlt
+Namespace:        default
+Priority:         0
+Service Account:  default
+Node:             <none>
+Labels:           app.kubernetes.io/name=api-gateway
+                  pod-template-hash=7f9d74475f
+Annotations:      cloud.google.com/cluster_autoscaler_unhelpable_since: 2025-06-09T11:20:33+0000
+                  cloud.google.com/cluster_autoscaler_unhelpable_until: Inf
+Status:           Pending
+SeccompProfile:   RuntimeDefault
+IP:               
+IPs:              <none>
+Controlled By:    ReplicaSet/api-gateway-7f9d74475f
+Containers:
+  api-gateway:
+    Image:      hongphuchcmus/spring-petclinic-api-gateway:latest
+    Port:       8080/TCP
+    Host Port:  0/TCP
+    Limits:
+      ephemeral-storage:  1Gi
+    Requests:
+      cpu:                500m
+      ephemeral-storage:  1Gi
+      memory:             2Gi
+    Environment:
+      SPRING_PROFILES_ACTIVE:    docker
+      EUREKA_INSTANCE_HOSTNAME:  api-gateway
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-q6vfm (ro)
+Conditions:
+  Type           Status
+  PodScheduled   False 
+Volumes:
+  kube-api-access-q6vfm:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 kubernetes.io/arch=amd64:NoSchedule
+                             node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason             Age                   From                                   Message
+  ----     ------             ----                  ----                                   -------
+  Warning  FailedScheduling   51m (x2 over 52m)     gke.io/optimize-utilization-scheduler  0/1 nodes are available: 1 Insufficient cpu. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.
+  Normal   TriggeredScaleUp   51m                   cluster-autoscaler                     pod triggered scale-up: [{https://www.googleapis.com/compute/v1/projects/snappy-run-459914-j8/zones/asia-southeast1-c/instanceGroups/gk3-petclinic-cluster-pool-2-8b3ad690-grp 0->2 (max: 1000)} {https://www.googleapis.com/compute/v1/projects/snappy-run-459914-j8/zones/asia-southeast1-a/instanceGroups/gk3-petclinic-cluster-pool-2-1b86f89f-grp 0->1 (max: 1000)}]
+  Warning  FailedScheduling   51m                   gke.io/optimize-utilization-scheduler  0/2 nodes are available: 1 Insufficient cpu, 1 node(s) had untolerated taint {node.cloudprovider.kubernetes.io/uninitialized: true}. preemption: 0/2 nodes are available: 1 No preemption victims found for incoming pod, 1 Preemption is not helpful for scheduling.
+  Warning  FailedScheduling   51m                   gke.io/optimize-utilization-scheduler  0/2 nodes are available: 1 Insufficient cpu, 1 node(s) had untolerated taint {node.kubernetes.io/not-ready: }. preemption: 0/2 nodes are available: 1 No preemption victims found for incoming pod, 1 Preemption is not helpful for scheduling.
+  Normal   NotTriggerScaleUp  48m                   cluster-autoscaler                     pod didn't trigger scale-up (it wouldn't fit if a new node is added): 1 node(s) had untolerated taint {cloud.google.com/gke-quick-remove: true}, 3 Insufficient cpu, 3 Insufficient memory, 18 in backoff after failed scale-up
+  Normal   TriggeredScaleUp   44m (x2 over 51m)     cluster-autoscaler                     pod triggered scale-up: [{https://www.googleapis.com/compute/v1/projects/snappy-run-459914-j8/zones/asia-southeast1-a/instanceGroups/gk3-petclinic-cluster-pool-2-1b86f89f-grp 1->2 (max: 1000)} {https://www.googleapis.com/compute/v1/projects/snappy-run-459914-j8/zones/asia-southeast1-b/instanceGroups/gk3-petclinic-cluster-pool-2-47dd4586-grp 1->2 (max: 1000)}]
+  Normal   NotTriggerScaleUp  40m (x2 over 48m)     cluster-autoscaler                     pod didn't trigger scale-up (it wouldn't fit if a new node is added): 3 Insufficient cpu, 3 Insufficient memory, 1 node(s) had untolerated taint {cloud.google.com/gke-quick-remove: true}, 18 in backoff after failed scale-up
+  Normal   NotTriggerScaleUp  35m (x7 over 47m)     cluster-autoscaler                     pod didn't trigger scale-up (it wouldn't fit if a new node is added): 1 node(s) had untolerated taint {cloud.google.com/gke-quick-remove: true}, 15 in backoff after failed scale-up, 3 Insufficient cpu, 3 Insufficient memory
+  Normal   TriggeredScaleUp   31m                   cluster-autoscaler                     pod triggered scale-up: [{https://www.googleapis.com/compute/v1/projects/snappy-run-459914-j8/zones/asia-southeast1-b/instanceGroups/gk3-petclinic-cluster-pool-2-47dd4586-grp 1->3 (max: 1000)}]
+  Warning  FailedScaleUp      30m (x3 over 43m)     cluster-autoscaler                     Node scale up in zones asia-southeast1-b associated with this pod failed: GCE quota exceeded. Pod is at risk of not being scheduled.
+  Normal   TriggeredScaleUp   21m                   cluster-autoscaler                     pod triggered scale-up: [{https://www.googleapis.com/compute/v1/projects/snappy-run-459914-j8/zones/asia-southeast1-a/instanceGroups/gk3-petclinic-cluster-nap-s1nmcxg2-10f17172-grp 0->1 (max: 1000)}]
+  Warning  FailedScaleUp      20m (x6 over 49m)     cluster-autoscaler                     Node scale up in zones asia-southeast1-a associated with this pod failed: GCE quota exceeded. Pod is at risk of not being scheduled.
+  Normal   NotTriggerScaleUp  17m (x43 over 47m)    cluster-autoscaler                     pod didn't trigger scale-up (it wouldn't fit if a new node is added): 1 node(s) had untolerated taint {cloud.google.com/gke-quick-remove: true}, 3 Insufficient cpu, 3 Insufficient memory, 15 in backoff after failed scale-up
+  Normal   NotTriggerScaleUp  12m (x120 over 47m)   cluster-autoscaler                     pod didn't trigger scale-up (it wouldn't fit if a new node is added): 3 Insufficient cpu, 3 Insufficient memory, 1 node(s) had untolerated taint {cloud.google.com/gke-quick-remove: true}, 15 in backoff after failed scale-up
+  Normal   TriggeredScaleUp   8m19s                 cluster-autoscaler                     pod triggered scale-up: [{https://www.googleapis.com/compute/v1/projects/snappy-run-459914-j8/zones/asia-southeast1-c/instanceGroups/gk3-petclinic-cluster-pool-2-8b3ad690-grp 0->2 (max: 1000)}]
+  Warning  FailedScaleUp      7m32s (x6 over 51m)   cluster-autoscaler                     Node scale up in zones asia-southeast1-c associated with this pod failed: GCE quota exceeded. Pod is at risk of not being scheduled.
+  Normal   NotTriggerScaleUp  4m21s (x19 over 44m)  cluster-autoscaler                     (combined from similar events): pod didn't trigger scale-up (it wouldn't fit if a new node is added): 3 Insufficient memory, 1 node(s) had untolerated taint {cloud.google.com/gke-quick-remove: true}, 18 in backoff after failed scale-up, 3 Insufficient cpu
+  Warning  FailedScheduling   40s (x12 over 50m)    gke.io/optimize-utilization-scheduler  0/2 nodes are available: 2 Insufficient cpu, 2 Insufficient memory. preemption: 0/2 nodes are available: 2 No preemption victims found for incoming pod.
+
+
+
+
+
+
+
+
+
+
+
+
+

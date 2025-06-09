@@ -29,7 +29,10 @@ spec:
             - name: EUREKA_INSTANCE_HOSTNAME
               value: {{ .Values.serviceName }}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            requests:
+              cpu: 80m
+            limits:
+              cpu: 100m
 ---
 apiVersion: v1
 kind: Service

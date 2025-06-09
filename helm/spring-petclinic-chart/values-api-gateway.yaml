@@ -12,7 +12,7 @@ containerPort: 8080
 springProfile: docker
 
 service:
-  type: ClusterIP
+  type: LoadBalancer
   port: 8080
 
 resources: {}
