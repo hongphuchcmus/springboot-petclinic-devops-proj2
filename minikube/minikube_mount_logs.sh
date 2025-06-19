@@ -1,0 +1,1 @@
+minikube mount /var/log/pods:home/hongphuc/mnt/minikube-pods-logs

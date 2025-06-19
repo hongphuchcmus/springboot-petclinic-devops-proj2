@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.serviceName }}
+  namespace: {{ .Values.namespace | default "default"}}
   labels:
     app.kubernetes.io/name: {{ .Values.serviceName }}
 spec:
@@ -28,16 +29,28 @@ spec:
               value: {{ .Values.springProfile | quote }}
             - name: EUREKA_INSTANCE_HOSTNAME
               value: {{ .Values.serviceName }}
+            - name: MANAGEMENT_ZIPKIN_TRACING_ENDPOINT
+              value: "http://tracing-server.tracing.svc.cluster.local:9411/api/v2/spans"
           resources:
-            requests:
-              cpu: 80m
-            limits:
-              cpu: 100m
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{ if and .Values.volumeMounts .Values.volumeMounts.mountConfigMap }}
+          volumeMounts:
+            - name: config-map
+              mountPath: {{ .Values.volumeMounts.configMountPath }}
+              subPath: {{ .Values.volumeMounts.configSubPath }}
+          {{- end}}
+      {{- if and .Values.volumeMounts .Values.volumeMounts.mountConfigMap}}
+      volumes:
+        - name: config-map
+          configMap:
+            name: {{ .Values.configMap.name }}
+      {{- end}} 
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "spring-petclinic-chart.fullname" . }}
+  namespace: {{ .Values.namespace | default "default"}}
 spec:
   type: {{ .Values.service.type }}
   selector:

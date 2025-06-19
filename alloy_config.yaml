@@ -1,0 +1,65 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  data:
+    config.alloy: "logging {\n\tlevel  = \"info\"\n\tformat = \"logfmt\"\n}\n\ndiscovery.kubernetes
+      \"pods\" {\n\trole = \"pod\"\n}\n\ndiscovery.kubernetes \"nodes\" {\n\trole
+      = \"node\"\n}\n\ndiscovery.kubernetes \"services\" {\n\trole = \"service\"\n}\n\ndiscovery.kubernetes
+      \"endpoints\" {\n\trole = \"endpoints\"\n}\n\ndiscovery.kubernetes \"endpointslices\"
+      {\n\trole = \"endpointslice\"\n}\n\ndiscovery.kubernetes \"ingresses\" {\n\trole
+      = \"ingress\"\n}"
+  kind: ConfigMap
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: alloy
+      meta.helm.sh/release-namespace: monitoring
+    creationTimestamp: "2025-06-17T10:13:51Z"
+    labels:
+      app.kubernetes.io/component: config
+      app.kubernetes.io/instance: alloy
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: alloy
+      app.kubernetes.io/part-of: alloy
+      app.kubernetes.io/version: v1.9.1
+      helm.sh/chart: alloy-1.1.1
+    name: alloy
+    namespace: monitoring
+    resourceVersion: "29803"
+    uid: 4771557f-7c6d-4d8e-b1a3-6b6a6436edc0
+- apiVersion: v1
+  data:
+    ca.crt: |
+      -----BEGIN CERTIFICATE-----
+      MIIDBjCCAe6gAwIBAgIBATANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDEwptaW5p
+      a3ViZUNBMB4XDTI1MDUxNjA3MDA0NVoXDTM1MDUxNTA3MDA0NVowFTETMBEGA1UE
+      AxMKbWluaWt1YmVDQTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALtc
+      QzDXsUlO/q8uNI/l9K6Ci8B0afR4C/OMw2aDfmV5oBvDhmM5asocpv6ocoWxTdk9
+      SnGQjrnwngIOOD67HykCrCPmtRuEtgKWOHbJrt6fBohf5YQ7wnOuQs9aLhI+wJW/
+      mC2QFOjhZaXJiETc/I7J8bsO8D3rxCgqMEtGUqsmoXASjR/7mNGSpDjK/2J4kKJy
+      AhwBQbrT3wpDehXMv//uIpxrSbSYHjjInkaahwq61OONvByGd3aGYO8heEmObUv1
+      Umg53+x8FhRTABygZygoQlEEWbsMVvOzQ3YxBob0M/38dGisTKOkpPY3ZqgSSbyT
+      0O0p+qAZDCLu8vv23MECAwEAAaNhMF8wDgYDVR0PAQH/BAQDAgKkMB0GA1UdJQQW
+      MBQGCCsGAQUFBwMCBggrBgEFBQcDATAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQW
+      BBS3R4bdmSfV5EaDhuucTEJCXW/gLDANBgkqhkiG9w0BAQsFAAOCAQEAFOvsJiDz
+      Ermj6Efm/G4Bg0Cyg43HAIUyYGOumIu41kRUTNTEwrNygk9wZZwpE1sul00dYoBk
+      n1IpWXuJx3zQy+edU7RjHtZXIyVc696QIVOHc8ZHQxgWhbieRGre2qZyUXcAf73f
+      5hATr1aFzgIs2lNfuPynLOctptyrshrH4Rn4hSppGi6ENDrAryNf1d5+G4v2unRW
+      3B/8VrJCoYmpCRFEXW5RrZXH/ADdJg16ql8CIYH8plOVkF+q2vYKoLnrpvIFLwuN
+      T7/FBVojauDzB501Rczt4zuHMoSh+uKbyG1MekgiMAL97L2stkonmYnvCA8NH+sz
+      AUHMr4Spl7qWhQ==
+      -----END CERTIFICATE-----
+  kind: ConfigMap
+  metadata:
+    annotations:
+      kubernetes.io/description: Contains a CA bundle that can be used to verify the
+        kube-apiserver when using internal endpoints such as the internal service
+        IP or kubernetes.default.svc. No other usage is guaranteed across distributions
+        of Kubernetes clusters.
+    creationTimestamp: "2025-06-17T00:21:57Z"
+    name: kube-root-ca.crt
+    namespace: monitoring
+    resourceVersion: "1238"
+    uid: 12243627-0fed-49c1-b996-2465418d7c87
+kind: List
+metadata:
+  resourceVersion: ""

@@ -1,0 +1,214 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    kubectl.kubernetes.io/default-container: alloy
+  creationTimestamp: "2025-06-17T10:13:51Z"
+  generateName: alloy-
+  labels:
+    app.kubernetes.io/instance: alloy
+    app.kubernetes.io/name: alloy
+    controller-revision-hash: 555467f65c
+    pod-template-generation: "1"
+  name: alloy-kpkj9
+  namespace: monitoring
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: DaemonSet
+    name: alloy
+    uid: 6db0ff33-a987-4751-b034-480996ed3f55
+  resourceVersion: "29841"
+  uid: 1bb3f1e1-cae4-4040-922d-b1e7c702f4ab
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchFields:
+          - key: metadata.name
+            operator: In
+            values:
+            - minikube
+  containers:
+  - args:
+    - run
+    - /etc/alloy/config.alloy
+    - --storage.path=/tmp/alloy
+    - --server.http.listen-addr=0.0.0.0:12345
+    - --server.http.ui-path-prefix=/
+    - --stability.level=generally-available
+    env:
+    - name: ALLOY_DEPLOY_MODE
+      value: helm
+    - name: HOSTNAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: spec.nodeName
+    image: docker.io/grafana/alloy:v1.9.1
+    imagePullPolicy: IfNotPresent
+    name: alloy
+    ports:
+    - containerPort: 12345
+      name: http-metrics
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /-/ready
+        port: 12345
+        scheme: HTTP
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/alloy
+      name: config
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-n72qz
+      readOnly: true
+  - args:
+    - --watched-dir=/etc/alloy
+    - --reload-url=http://localhost:12345/-/reload
+    image: quay.io/prometheus-operator/prometheus-config-reloader:v0.81.0
+    imagePullPolicy: IfNotPresent
+    name: config-reloader
+    resources:
+      requests:
+        cpu: 10m
+        memory: 50Mi
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/alloy
+      name: config
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-n72qz
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: minikube
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: alloy
+  serviceAccountName: alloy
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/disk-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/pid-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/unschedulable
+    operator: Exists
+  volumes:
+  - configMap:
+      defaultMode: 420
+      name: alloy
+    name: config
+  - name: kube-api-access-n72qz
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2025-06-17T10:13:53Z"
+    status: "True"
+    type: PodReadyToStartContainers
+  - lastProbeTime: null
+    lastTransitionTime: "2025-06-17T10:13:51Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2025-06-17T10:14:04Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2025-06-17T10:14:04Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2025-06-17T10:13:51Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: docker://d8c0832113e8cc52d842642e609b213e9187504a7d5282a60cdd3088b9f6bb12
+    image: grafana/alloy:latest
+    imageID: docker-pullable://grafana/alloy@sha256:b5fc87ff9a8941d6ed3ae5f099d9cb8598b3cd42fef9a8af128ed782258b4017
+    lastState: {}
+    name: alloy
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2025-06-17T10:13:52Z"
+    volumeMounts:
+    - mountPath: /etc/alloy
+      name: config
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-n72qz
+      readOnly: true
+      recursiveReadOnly: Disabled
+  - containerID: docker://4617bed889b018f5229bb637b958462b78bacb7d49ed54f20e17c8ed54e06c5e
+    image: quay.io/prometheus-operator/prometheus-config-reloader:v0.81.0
+    imageID: docker-pullable://quay.io/prometheus-operator/prometheus-config-reloader@sha256:959d47672fbff2776a04ec62b8afcec89e8c036af84dc5fade50019dab212746
+    lastState: {}
+    name: config-reloader
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2025-06-17T10:13:52Z"
+    volumeMounts:
+    - mountPath: /etc/alloy
+      name: config
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-n72qz
+      readOnly: true
+      recursiveReadOnly: Disabled
+  hostIP: 192.168.49.2
+  hostIPs:
+  - ip: 192.168.49.2
+  phase: Running
+  podIP: 10.244.0.66
+  podIPs:
+  - ip: 10.244.0.66
+  qosClass: Burstable
+  startTime: "2025-06-17T10:13:51Z"

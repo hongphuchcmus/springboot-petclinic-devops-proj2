@@ -11,6 +11,11 @@ services=(
   customers-service
   visits-service
   api-gateway
+  tracing-server
+  prometheus
+  loki
+  grafana
+  alloy
 )
 
 # Loop over each service

@@ -82,6 +82,11 @@ class PetResource {
             .ifPresent(pet::setType);
 
         log.info("Saving pet {}", pet);
+        
+        if ("AlertRuleTest".equals(petRequest.name())) {
+            throw new RuntimeException("Intentional server error for testing");
+        }
+
         return petRepository.save(pet);
     }
 

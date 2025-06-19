@@ -1,0 +1,19 @@
+nameOverride: grafana
+serviceName: grafana
+namespace: monitoring
+
+replicaCount: 1
+
+image:
+  repository: hongphuchcmus/spring-petclinic-grafana
+  tag: latest
+  pullPolicy: Always
+
+containerPort: 3000
+springProfile: docker
+
+service:
+  type: ClusterIP
+  port: 3000
+
+resources: {}

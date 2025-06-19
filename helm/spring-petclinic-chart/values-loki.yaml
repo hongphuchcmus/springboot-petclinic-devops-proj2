@@ -1,0 +1,19 @@
+nameOverride: loki
+serviceName: loki
+namespace: monitoring
+
+replicaCount: 1
+
+image:
+  repository: grafana/loki
+  tag: latest
+  pullPolicy: IfNotPresent
+
+containerPort: 3100
+springProfile: docker
+
+service:
+  type: ClusterIP
+  port: 3100
+
+resources: {}

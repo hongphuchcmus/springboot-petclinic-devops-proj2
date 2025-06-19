@@ -6,7 +6,7 @@ replicaCount: 1
 image:
   repository: hongphuchcmus/spring-petclinic-customers-service
   tag: latest
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 containerPort: 8081
 springProfile: docker

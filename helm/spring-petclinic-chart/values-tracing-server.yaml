@@ -1,0 +1,19 @@
+nameOverride: tracing-server
+serviceName: tracing-server
+namespace: tracing
+
+replicaCount: 1
+
+image:
+  repository: openzipkin/zipkin
+  tag: latest
+  pullPolicy: Always
+
+containerPort: 9411
+springProfile: docker
+
+service:
+  type: ClusterIP
+  port: 9411
+
+resources: {}
