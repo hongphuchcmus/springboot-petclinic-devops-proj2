@@ -12,8 +12,9 @@ containerPort: 8080
 springProfile: docker
 
 service:
-  type: LoadBalancer
+  type: NodePort
   port: 8080
+  nodePort: 30200
 
 resources: {}
 

@@ -11,10 +11,10 @@ services=(
   customers-service
   visits-service
   api-gateway
-  #tracing-server
-  #prometheus
-  #loki
-  #grafana
+  tracing-server
+  grafana
+  prometheus
+  loki
 )
 
 # Create namespaces
@@ -39,5 +39,5 @@ fi
 
 # Deploy alloy (alloy didn't work when using images)
 echo "Deploying alloy ..."
-helm install alloy grafana/alloy -f helm/spring-petclinic-chart/config-alloy.yaml
+helm install alloy grafana/alloy -f helm/spring-petclinic-chart/config-alloy.yaml -n monitoring
 echo "Done."

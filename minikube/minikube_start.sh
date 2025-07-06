@@ -1,0 +1,1 @@
+minikube start --addons=ingress --cpus=3 --memory=6114
